@@ -10,8 +10,8 @@
 
 ## Implement this script
 1. Create a new Apps Script project.
-2. Copy and paste the code into code.js.
-3. Update the configuration. At minimum, replace [YOUR_WEBHOOK_URL_GOES_HERE] with your webhook's URL.
+2. Copy and paste the code from code.js (in this repo) into Code.gs (in the Apps script project).
+3. Update the configuration directly in the code. At minimum, replace [YOUR_WEBHOOK_URL_GOES_HERE] with your webhook's URL.
 4. Run initializeScript() and authorize scopes.
 5. Run logScriptProperties() to verify local storage is working properly.
-6. Check your Hangouts Chat room for a post.
+6. Check your Hangouts Chat room for your first update.
