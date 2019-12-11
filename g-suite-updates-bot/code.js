@@ -1,5 +1,6 @@
 /*
   G Suite Updates Webhook
+  
 
   TL;DR:
   Keep up to date with all G Suite feature releases and updates by having
