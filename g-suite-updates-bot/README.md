@@ -15,3 +15,6 @@
 4. Run initializeScript() and authorize scopes.
 5. Run logScriptProperties() to verify local storage is working properly.
 6. Check your Hangouts Chat room for your first update.
+
+## End result
+![Example post from the bot](/examplepost.png)
