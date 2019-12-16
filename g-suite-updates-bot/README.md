@@ -17,4 +17,4 @@
 6. Check your Hangouts Chat room for your first update.
 
 ## End result
-![Example post from the bot](/examplepost.png)
+![Example post from the bot](examplepost.png)
