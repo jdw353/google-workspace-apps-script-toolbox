@@ -15,7 +15,7 @@
   - New posts are published to configured Chat rooms.
 
   Configuration:
-  - You must provide a webhook URL in the [YOUR_WEBHOOK_URL_GOES_HERE] space.
+  - You must provide a webhook URL in the YOUR_WEBHOOK_URL_GOES_HERE space.
   - You may modify MAX_CONTENT_CHARS, MAX_INIT_UPDATES.
   - There's no real good reason for updating MAX_CONTENT_UPDATES.
   - FeedFormat and WehhookPlatfrom can be expanded on to include other types.
