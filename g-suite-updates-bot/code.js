@@ -41,12 +41,12 @@ var WebhookPlatform = {
   HANGOUTS: {name: 'Hangouts Chat', view: buildHangoutsChatView_}
 };
 
-// Replace [YOUR_WEBHOOK_URL_GOES_HERE] with a webhook URL from Hangouts Chat.
+// Replace YOUR_WEBHOOK_URL_GOES_HERE with a webhook URL from Hangouts Chat.
 var WEBHOOKS = {
   ADMIN_ROOM: {
     name: 'G Suite Admin Chat Room',
     type: WebhookPlatform.HANGOUTS,
-    url: '[YOUR_WEBHOOK_URL_GOES_HERE]'
+    url: 'YOUR_WEBHOOK_URL_GOES_HERE'
   }
 };
 
