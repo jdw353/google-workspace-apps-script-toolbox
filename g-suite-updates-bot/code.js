@@ -13,12 +13,12 @@
     If it's new, it is queued for posting.
   - State is saved for next run.
   - New posts are published to configured Chat rooms.
-
+  
   Configuration:
   - You must provide a webhook URL in the YOUR_WEBHOOK_URL_GOES_HERE space.
   - You may modify MAX_CONTENT_CHARS, MAX_INIT_UPDATES.
   - There's no real good reason for updating MAX_CONTENT_UPDATES.
-  - FeedFormat and WehhookPlatfrom can be expanded on to include other types.
+  - FeedFormat and WebhookPlatform can be expanded on to include other types.
 */
 
 var TRIGGER_INTERVAL_HOURS = 1;
@@ -31,9 +31,9 @@ var MAX_CONTENT_UPDATES = 10;
 var MAX_INIT_UPDATES = 1;
 
 var FeedFormat = {
-  XML: {
-    name: 'XML',
-    parseFunction: parseXmlIntoUpdateObject_,
+  FB_XML: {
+    name: 'Feed Burner XML',
+    parseFunction: parseFBXmlIntoUpdateObject_,
   }
 };
 
@@ -52,13 +52,23 @@ var WEBHOOKS = {
 
 var FEEDS = {
   GSU: {
-    format: FeedFormat.XML,
+    format: FeedFormat.FB_XML,
     title: 'G Suite Updates',
     subtitle: 'gsuiteupdates.googleblog.com',
     source: 'http://feeds.feedburner.com/GoogleAppsUpdates',
     logo: 'http://www.stickpng.com/assets/images/5847f9cbcef1014c0b5e48c8.png',
     cta: 'READ MORE',
     filters: ['What’s changing', 'Quick launch summary'],
+    webhooks: [WEBHOOKS.ADMIN_ROOM]
+  },
+  CRB: {
+    format: FeedFormat.FB_XML,
+    title: 'Chrome Releases',
+    subtitle: 'chromereleases.googleblog.com',
+    source: 'http://feeds.feedburner.com/GoogleChromeReleases',
+    logo: 'https://storage.googleapis.com/kimberlybucket001/chrome.png',
+    cta: 'READ MORE',
+    filters: [],
     webhooks: [WEBHOOKS.ADMIN_ROOM]
   },
 };
@@ -127,10 +137,7 @@ function fetchLatestUpdates_(feed) {
     return updates;
   }
 
-  switch (FEEDS[feed].format.name) {
-    case FeedFormat.XML.name:
-      updates = FeedFormat.XML.parseFunction(feed, results.getContentText());
-  }
+  updates = FEEDS[feed].format.parseFunction(feed, results.getContentText());
 
   // Cap the number of updates that are processed and stored.
   var recordsToRemove = updates.length - MAX_CONTENT_UPDATES;
@@ -190,7 +197,7 @@ function postUpdate_(url, updateView) {
   }
 }
 
-function parseXmlIntoUpdateObject_(feed, feedXml) {
+function parseFBXmlIntoUpdateObject_(feed, feedXml) {
   var updates = [];
   var document = XmlService.parse(feedXml);
   var atom = XmlService.getNamespace('http://www.w3.org/2005/Atom');
@@ -201,8 +208,14 @@ function parseXmlIntoUpdateObject_(feed, feedXml) {
     var publishedDate = entry.getChild('published', atom).getText();
     var title = entry.getChild('title', atom).getText();
     var content = entry.getChild('content', atom).getText();
-    var link =
-        entry.getChildren('link', atom)[2].getAttribute('href').getValue();
+    var linkOptions = entry.getChildren('link', atom);
+    var link = '';
+    for (var i = 0; i < linkOptions.length; i++) {
+      if (linkOptions[i].getAttribute('rel').getValue() === 'alternate') {
+        link = linkOptions[i].getAttribute('href').getValue();
+        break;
+      }
+    }
     updates.push(
         buildUpdateObject_(feed, id, publishedDate, title, content, link));
   });
