@@ -1,5 +1,9 @@
 # G Suite Updates Bot
 
+## Included Feeds
+- [G Suite Updates](gsuiteupdates.googleblog.com)
+- [Chrome Releases Blog](chromereleases.googleblog.com)
+
 ## Create a webhook in Hangouts Chat
 1. In a Hangouts Chat room, select 'Configure webhooks'.
 2. If one already exists, select 'Add another', otherwise...
