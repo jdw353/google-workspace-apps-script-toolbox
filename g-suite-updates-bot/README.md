@@ -4,8 +4,8 @@
 - [G Suite Updates](gsuiteupdates.googleblog.com)
 - [Chrome Releases Blog](chromereleases.googleblog.com)
 
-## Create a webhook in Hangouts Chat
-1. In a Hangouts Chat room, select 'Configure webhooks'.
+## Create a webhook in Google Chat
+1. In a Google Chat room, select 'Configure webhooks'.
 2. If one already exists, select 'Add another', otherwise...
 3. Enter a name for your webhook. You may want to use 'G Suite Updates'.
 4. Enter an icon for your webhook. You may want to use [this image](https://lh3.googleusercontent.com/proxy/Avi9GdfQQrgH3Iyy7f92yR4NElOpiq46VzMwnCWAFJRvj_GU_r2f2aUdKDNiQfchDKg50O2jj445ohIY_TuGoGyDGWVZVcedIMAwuM7eKX88ymDx40A=s88-c).
