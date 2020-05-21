@@ -4,7 +4,7 @@
 
   TL;DR:
   Keep up to date with all G Suite feature releases and updates by having
-  updates from gsuiteupdates.googleblog.com published to a Hangouts Chat room.
+  updates from gsuiteupdates.googleblog.com published to a Google Chat room.
 
   Specifics:
   - Deploy as one Apps Script project and file.
@@ -38,14 +38,14 @@ var FeedFormat = {
 };
 
 var WebhookPlatform = {
-  HANGOUTS: {name: 'Hangouts Chat', view: buildHangoutsChatView_}
+  GOOGLE_CHAT: {name: 'Google Chat', view: buildGoogleChatView_}
 };
 
-// Replace YOUR_WEBHOOK_URL_GOES_HERE with a webhook URL from Hangouts Chat.
+// Replace YOUR_WEBHOOK_URL_GOES_HERE with a webhook URL from Google Chat.
 var WEBHOOKS = {
   ADMIN_ROOM: {
     name: 'G Suite Admin Chat Room',
-    type: WebhookPlatform.HANGOUTS,
+    type: WebhookPlatform.GOOGLE_CHAT,
     url: 'YOUR_WEBHOOK_URL_GOES_HERE'
   }
 };
@@ -258,7 +258,7 @@ function resetTriggers_() {
       .create();
 }
 
-function buildHangoutsChatView_(feed, update) {
+function buildGoogleChatView_(feed, update) {
   return {
     'cards': [{
       'header': {
