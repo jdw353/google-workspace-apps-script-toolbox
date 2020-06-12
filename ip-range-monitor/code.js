@@ -69,7 +69,7 @@ var CHAT_WEBHOOK_URL =
 /** @enum {string} */
 var ChangeAction = {ADD: 'add', REMOVE: 'remove'};
 /** @enum {string} */
-var ScriptProperty = {PREFIX: 'prefixes', TIME: 'creationTime'};
+var ScriptProperty = {PREFIX: 'prefixes', SYNC: 'syncToken'};
 
 /**
  * ChangeRecord object that details relevant info when a range is changed.
@@ -107,14 +107,14 @@ function initializeMonitor() {
 function executeUpdateWorkflow() {
   try {
     var ipRanges = getGoogleIpRanges_();
-    var isDataUpdated = determineIfDataIsUpdated_(ipRanges.creationTime);
+    var isDataUpdated = determineIfDataIsUpdated_(ipRanges.syncToken);
     if (!isDataUpdated) {
-      Logger.log('Data has not been updated since last checked.');
+      Logger.log('Data has not been updated since last check.');
       return;
     }
     var prefixMap = mapIpPrefixes_(ipRanges.prefixes);
     var ipRangeChanges = getIPRangeChanges_(prefixMap);
-    setNewDataUpdatedTime_(ipRanges.creationTime);
+    setNewDataUpdatedTime_(ipRanges.syncToken);
     if (ipRangeChanges.length) {
       if (DISTRIBUTION.EMAIL) {
         emailChanges_(ipRangeChanges);
@@ -137,7 +137,7 @@ function executeUpdateWorkflow() {
 function logScriptProperties() {
   Logger.log(
       'Last Updated: ' +
-      PropertiesService.getScriptProperties().getProperty(ScriptProperty.TIME));
+      PropertiesService.getScriptProperties().getProperty(ScriptProperty.SYNC));
   var knownPrefixes = PropertiesService.getScriptProperties().getProperty(
       ScriptProperty.PREFIX);
   if (knownPrefixes != null) {
@@ -163,20 +163,21 @@ function getGoogleIpRanges_() {
 }
 
 /**
- * Simply checks to see whether the date in the latest fetch is differen than
- * the last date stored in storage. A non-match assumes data was updated.
- * @param {string} creationTime A string representation of a date.
+ * Simply checks to see whether the data in the latest fetch is different than
+ * the last data stored in storage by comparing the syncToken (timestamp).
+ * It's possible that there can be a mismatch but no prefixes have changed.
+ * @param {string} syncToken A timestamp of when the list was last updated.
  * @return {bool} Whether or not the dates are different.
  */
-function determineIfDataIsUpdated_(creationTime) {
-  var previousCreationTime =
-      PropertiesService.getScriptProperties().getProperty(ScriptProperty.TIME);
+function determineIfDataIsUpdated_(syncToken) {
+  var previousSyncToken =
+      PropertiesService.getScriptProperties().getProperty(ScriptProperty.SYNC);
 
-  if (previousCreationTime == null) {
+  if (previousSyncToken == null) {
     return true;
   }
 
-  return (creationTime !== previousCreationTime);
+  return (syncToken !== previousSyncToken);
 }
 
 /**
@@ -242,12 +243,12 @@ function getIPRangeChanges_(prefixMap) {
 }
 
 /**
- * Updates the script's stored creation time with the one from the latest data.
- * @param {string} creationTime A string representation of a date.
+ * Updates the script's stored syncToken with the one from the latest data.
+ * @param {string} syncToken A timestamp of when the data was last updated.
  */
-function setNewDataUpdatedTime_(creationTime) {
+function setNewDataUpdatedTime_(syncToken) {
   PropertiesService.getScriptProperties().setProperty(
-      ScriptProperty.TIME, creationTime);
+      ScriptProperty.SYNC, syncToken);
 }
 
 
