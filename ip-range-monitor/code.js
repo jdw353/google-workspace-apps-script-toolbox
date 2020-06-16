@@ -58,8 +58,7 @@ var ChangeRecordFormat = {
  * required for {space}, {key}, and {token}.
  */
 /** @const {string} */
-var CHAT_WEBHOOK_URL =
-    'https://chat.googleapis.com/v1/spaces/{space}' +
+var CHAT_WEBHOOK_URL = 'https://chat.googleapis.com/v1/spaces/{space}' +
     '/messages?key={key}' +
     '&token={token}';
 
@@ -208,6 +207,10 @@ function mapIpPrefixes_(prefixes) {
  *    detected changes and whether the action should be to add or remove them.
  */
 function getIPRangeChanges_(prefixMap) {
+  if (!prefixMap) {
+    return [];
+  }
+
   var changes = [];
   var newPrefixes = {};
   var oldPrefixes = PropertiesService.getScriptProperties().getProperty(
@@ -263,9 +266,8 @@ function emailChanges_(changeRecords) {
 
   changeRecords.forEach(function(changeRecord) {
     changePlain +=
-        formatChangeForDisplay_(changeRecord, ChangeRecordFormat.PLAIN);
-    changeHTML +=
-        formatChangeForDisplay_(changeRecord, ChangeRecordFormat.HTML);
+        formatChangeForEmail_(changeRecord, ChangeRecordFormat.PLAIN);
+    changeHTML += formatChangeForEmail_(changeRecord, ChangeRecordFormat.HTML);
   });
 
   GmailApp.sendEmail(
@@ -321,7 +323,7 @@ function getChangeRecord_(action, ipType, ip) {
  * @param {!ChangeRecordFormat} emailChangeFormat HTML or PLAIN.
  * @return {string} - Formatted change that includes the values.
  */
-function formatChangeForDisplay_(changeRecord, emailChangeFormat) {
+function formatChangeForEmail_(changeRecord, emailChangeFormat) {
   return emailChangeFormat.replace('%ACTION%', changeRecord.action)
       .replace('%IPTYPE%', changeRecord.ipType)
       .replace('%IP%', changeRecord.ip);
