@@ -20,14 +20,17 @@ var USER_OPTIONS = {
   
   function main() {
     var users = fetchDomainUsers_();
-    Logger.log(users);
     for (var i = 0; i < users.length; i++) {
-      writeUserToSheet(users[i]);
+      if (i == 0) {
+        writeHeaderToSheet_()
+      }
+      writeUserToSheet_(users[i]);
     }
   }
   
   function fetchDomainUsers_() {
     var users = [];
+    var pageCount = 1;
     do {
       var response = AdminDirectory.Users.list(USER_OPTIONS);
       response.users.forEach(function(user) {
@@ -38,11 +41,19 @@ var USER_OPTIONS = {
       if (response.nextPageToken) {
         USER_OPTIONS.pageToken = response.nextPageToken;
       }
+      
+      Logger.log('Page ' + pageCount + ': ' + response.users.length + ' users.');
+      pageCount++;
     } while (response.nextPageToken);
     return users;
   }
   
-  function writeUserToSheet(user) {
+  function writeHeaderToSheet_() {
+    var sheet = SpreadsheetApp.openById(OUTPUT_SHEET_ID).getSheets()[0];
+    sheet.getRange(sheet.getLastRow() + 1, 1, 1, 3).setValues([['User Name', 'Email Address', 'Is Primary?']]);
+  }
+  
+  function writeUserToSheet_(user) {
     var records = [];
     if (user.emails.length > 0) {
       for (var i = 0; i < user.emails.length; i++) {
