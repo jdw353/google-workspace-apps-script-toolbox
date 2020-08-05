@@ -20,10 +20,8 @@ var USER_OPTIONS = {
   
   function main() {
     var users = fetchDomainUsers_();
+    writeHeaderToSheet_();
     for (var i = 0; i < users.length; i++) {
-      if (i == 0) {
-        writeHeaderToSheet_()
-      }
       writeUserToSheet_(users[i]);
     }
   }
