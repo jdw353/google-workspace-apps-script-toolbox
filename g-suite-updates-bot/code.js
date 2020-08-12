@@ -34,6 +34,10 @@ var FeedFormat = {
   FB_XML: {
     name: 'Feed Burner XML',
     parseFunction: parseFBXmlIntoUpdateObject_,
+  },
+  GOOGLE_BLOG_RSS: {
+    name: 'Google Blog RSS',
+    parseFunction: parseGoogleBlogRssIntoUpdateObject_,
   }
 };
 
@@ -71,6 +75,16 @@ var FEEDS = {
     filters: [],
     webhooks: [WEBHOOKS.ADMIN_ROOM]
   },
+  TCB: {
+    format: FeedFormat.GOOGLE_BLOG_RSS,
+    title: 'GCP Training & Certification',
+    subtitle: 'cloudblog.withgoogle.com',
+    source: 'https://cloudblog.withgoogle.com/topics/training-certifications/rss/',
+    logo: 'https://symbols.getvecta.com/stencil_82/40_google-cloud-icon.d909bfafc6.png',
+    cta: 'READ MORE',
+    filters: [],
+    webhooks: [WEBHOOKS.ADMIN_ROOM]
+  }
 };
 
 /**
@@ -218,6 +232,24 @@ function parseFBXmlIntoUpdateObject_(feed, feedXml) {
     }
     updates.push(
         buildUpdateObject_(feed, id, publishedDate, title, content, link));
+  });
+
+  return updates;
+}
+
+function parseGoogleBlogRssIntoUpdateObject_(feed, feedXml) {
+  var updates = [];
+  var document = XmlService.parse(feedXml);
+  var entries = document.getRootElement().getChild('channel').getChildren('item');
+
+  entries.forEach(function(entry) {
+    var guid = entry.getChild('guid').getText();
+    var publishedDate = entry.getChild('pubDate').getText();
+    var title = entry.getChild('title').getText();
+    var description = entry.getChild('description').getText();
+    var link = entry.getChild('link').getText();
+    updates.push(
+        buildUpdateObject_(feed, guid, publishedDate, title, description, link));
   });
 
   return updates;
