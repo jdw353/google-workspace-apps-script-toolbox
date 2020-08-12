@@ -3,6 +3,7 @@
 ## Included Feeds
 - [G Suite Updates](gsuiteupdates.googleblog.com)
 - [Chrome Releases Blog](chromereleases.googleblog.com)
+- [Cloud Blog: Training and Certifications](https://cloud.google.com/blog/topics/training-certifications)
 
 ## Create a webhook in Google Chat
 1. In a Google Chat room, select 'Configure webhooks'.
