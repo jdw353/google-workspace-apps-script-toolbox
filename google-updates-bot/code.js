@@ -1,19 +1,18 @@
 /*
-  G Suite Updates Webhook
-  
+  Google Workspace Updates Bot
 
   TL;DR:
-  Keep up to date with all G Suite feature releases and updates by having
-  updates from gsuiteupdates.googleblog.com published to a Google Chat room.
+  Keep up to date with all Google Workspace feature releases and updates by having
+  updates from workspaceupdates.googleblog.com published to a Google Chat room.
 
   Specifics:
   - Deploy as one Apps Script project and file.
-  - Polls the RSS feed for G Suite Updates and parses the XML.
+  - Polls the RSS feed for Google Workspace Updates and parses the XML.
   - Evaluates whether or not the update has been seen. If it has, it's skipped.
     If it's new, it is queued for posting.
   - State is saved for next run.
   - New posts are published to configured Chat rooms.
-  
+
   Configuration:
   - You must provide a webhook URL in the YOUR_WEBHOOK_URL_GOES_HERE space.
   - You may modify MAX_CONTENT_CHARS, MAX_INIT_UPDATES.
@@ -48,7 +47,7 @@ var WebhookPlatform = {
 // Replace YOUR_WEBHOOK_URL_GOES_HERE with a webhook URL from Google Chat.
 var WEBHOOKS = {
   ADMIN_ROOM: {
-    name: 'G Suite Admin Chat Room',
+    name: 'Google Workspace Admin Room',
     type: WebhookPlatform.GOOGLE_CHAT,
     url: 'YOUR_WEBHOOK_URL_GOES_HERE'
   }
@@ -57,8 +56,8 @@ var WEBHOOKS = {
 var FEEDS = {
   GSU: {
     format: FeedFormat.FB_XML,
-    title: 'G Suite Updates',
-    subtitle: 'gsuiteupdates.googleblog.com',
+    title: 'Google Workspace Updates',
+    subtitle: 'workspaceupdates.googleblog.com',
     source: 'http://feeds.feedburner.com/GoogleAppsUpdates',
     logo: 'http://www.stickpng.com/assets/images/5847f9cbcef1014c0b5e48c8.png',
     cta: 'READ MORE',

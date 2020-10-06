@@ -1,14 +1,14 @@
-# G Suite Updates Bot
+# Google Workspace Updates Bot
 
 ## Included Feeds
-- [G Suite Updates](gsuiteupdates.googleblog.com)
+- [Google Workspace Updates](workspaceupdates.googleblog.com)
 - [Chrome Releases Blog](chromereleases.googleblog.com)
 - [Cloud Blog: Training and Certifications](https://cloud.google.com/blog/topics/training-certifications)
 
 ## Create a webhook in Google Chat
 1. In a Google Chat room, select 'Configure webhooks'.
 2. If one already exists, select 'Add another', otherwise...
-3. Enter a name for your webhook. You may want to use 'G Suite Updates'.
+3. Enter a name for your webhook. You may want to use 'Google Workspace Updates'.
 4. Enter an icon for your webhook. You may want to use [this image](https://lh3.googleusercontent.com/proxy/Avi9GdfQQrgH3Iyy7f92yR4NElOpiq46VzMwnCWAFJRvj_GU_r2f2aUdKDNiQfchDKg50O2jj445ohIY_TuGoGyDGWVZVcedIMAwuM7eKX88ymDx40A=s88-c).
 5. Save the webhook.
 6. Once saved, copy the webhook URL, which you'll need when you setup the script.
