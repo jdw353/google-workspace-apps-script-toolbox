@@ -79,7 +79,7 @@ var FEEDS = {
     title: 'GCP Training & Certification',
     subtitle: 'cloudblog.withgoogle.com',
     source: 'https://cloudblog.withgoogle.com/topics/training-certifications/rss/',
-    logo: 'https://symbols.getvecta.com/stencil_82/40_google-cloud-icon.d909bfafc6.png',
+    logo: 'https://cdn.iconscout.com/icon/free/png-256/google-cloud-2038785-1721675.png',
     cta: 'READ MORE',
     filters: [],
     webhooks: [WEBHOOKS.ADMIN_ROOM]
