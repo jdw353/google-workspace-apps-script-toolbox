@@ -1,8 +1,8 @@
 # Google Workspace Updates Bot
 
 ## Included Feeds
-- [Google Workspace Updates](workspaceupdates.googleblog.com)
-- [Chrome Releases Blog](chromereleases.googleblog.com)
+- [Google Workspace Updates](https://workspaceupdates.googleblog.com/)
+- [Chrome Releases Blog](https://chromereleases.googleblog.com)
 - [Cloud Blog: Training and Certifications](https://cloud.google.com/blog/topics/training-certifications)
 
 ## Create a webhook in Google Chat
