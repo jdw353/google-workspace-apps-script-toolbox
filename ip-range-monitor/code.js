@@ -33,7 +33,7 @@ var DAILY_TRIGGER_TZ = 'America/New_York';
  * Google IP Range Configuration
  */
 /** @const {string} */
-var GOOGLE_IP_RANGES = 'http://www.gstatic.com/ipranges/goog.json';
+var GOOGLE_IP_RANGES = 'https://www.gstatic.com/ipranges/goog.json';
 
 /**
  * Email Configuration
