@@ -15,11 +15,11 @@
 
 ## Implement this script
 1. Create a new Apps Script project.
-2. Copy and paste the code from [code.js](code.js) into Code.gs (in the Apps script project).
+2. Copy and paste the code from [code.js](code.js) into Code.gs (in the Apps Script project).
 3. Update the configuration directly in the code. At minimum, replace YOUR_WEBHOOK_URL_GOES_HERE with your webhook's URL.
 4. Run initializeScript() and authorize scopes.
 5. Run logScriptProperties() to verify local storage is working properly.
-6. Check your Hangouts Chat room for your first update.
+6. Check your Google Chat room for your first update.
 
 ## End result
 ![Example post from the bot](examplepost.png)
