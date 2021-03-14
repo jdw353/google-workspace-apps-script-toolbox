@@ -1,6 +1,6 @@
-# G Suite Apps Script Toolbox
+# Google Workspace Apps Script Toolbox
 
-A collection of scripts for G Suite admins and users who leverage G Suite applications.
+A collection of scripts for Google Workspace admins and users who leverage Workspace applications.
 
 ## Scripts
  * [Google Updates Bot](google-updates-bot)
