@@ -154,7 +154,9 @@ function fetchLatestUpdates_(feed) {
 
   // Cap the number of updates that are processed and stored.
   var recordsToRemove = updates.length - MAX_CONTENT_UPDATES;
-  updates.splice(-recordsToRemove, recordsToRemove);
+  if (recordsToRemove > 0) {
+    updates.splice(-recordsToRemove, recordsToRemove);
+  }
 
   return updates;
 }
