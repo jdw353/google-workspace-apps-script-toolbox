@@ -4,10 +4,10 @@ Google maintains a global infrastructure, which grows dynamically to accommodate
 increasing demand. Google services use a large range of IP addresses, which
 often change.
 
-As a result, there are some instances where G Suite customers will want to
+As a result, there are some instances where Google Workspace customers will want to
 monitor and know when changes are made to the list of IP addresses.
 
-_Google IP Range Monitor_ provides a method that G Suite Administrators, Network
+_Google IP Range Monitor_ provides a method that Google Workspace Administrators, Network
 Admins, or Google Partners can follow in order to set up an automated Apps
 Script project that will notify them via email when changes are made to Google’s
 IP ranges.
