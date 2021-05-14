@@ -14,12 +14,13 @@ Messages that are found to match the query will have their attachments saved to 
 After a message is processed, it is marked as read and archived, which prevents it from being queried again in the future.
 
 ## Rules
-Rules are contained in a Google Sheet and contain five attributes (that must be listed in this order):
+Rules are contained in a Google Sheet and contain six attributes (that must be listed in this order):
 -   Rule Description: A nice name for the rule being executed.
 -   Destination ID: The Drive directory ID that should parent where the files are placed.
 -   Trigger Type: The criteria that the message will be evaluated against to determine if the rule fits.
 -   Trigger Keyword: The keyword that the trigger is looking to match.
 -   Subdirectory: Whether or not files should be placed directly into the destination folder or placed in a subdirectory.
+-   Domain View: Whether or not everyone in the domain should get view only permission to a file if they have the link.
 
 ### Trigger Types
 Triggers are the criteria by which a message will be evaluated to see if it matches a rule.
@@ -32,6 +33,11 @@ Subdirectory options control how attachments are placed into the destination Dri
 -   NONE: Store the files directly in the destination Drive folder provided.
 -   DATE: Store the files in a subidrectory by date (YYYY-MM-DD). This is the date the script is run, not the date of the message.
 -   SENDER: Store the files in a subdirectory by the message sender.
+
+### Domain View Options
+The domain view setting allows for additional permissions to be set on each file.
+-   FALSE: No additional permissions will be granted to the entire domain (if they have the link). Only those with inherited permissions will have access.
+-   TRUE: Each file will be granted view only permission to the entire domain (if they have the link).
 
 ## Scopes and Configuration 
 
@@ -53,7 +59,7 @@ There are 3 variables in the code itself that may require modification before ex
 This application consists of two components: an Apps Script project and a Google Sheet. The script is generally expected to be initalized once via manual execution, followed by triggered execution every X minutes. The Sheet can be updated with rules without needing to modify the script.
 
 ### Sheet creation and setup
--   Make a copy of this [template rule sheet](https://docs.google.com/spreadsheets/d/15KfB7d7zxDaJvptfWlDezPh7CUzMgPgT8pFfy7gkL0w) OR create a new Google Sheet with 5 columns and a header matching the Rules attributes listed above.
+-   Make a copy of this [template rule sheet](https://docs.google.com/spreadsheets/d/15KfB7d7zxDaJvptfWlDezPh7CUzMgPgT8pFfy7gkL0w) OR create a new Google Sheet with 6 columns and a header matching the Rules attributes listed above.
 -   Rename the worksheet to 'Rules' or a name of your choosing. This will be required for the script's configuration.
 -   Make a note of the script ID found in the URL. This will be required for the script's configuration.
 -   Optionally create data validation rules for the Trigger Type and Subdirectory values that map to the attributes listed above.
@@ -69,4 +75,4 @@ This application consists of two components: an Apps Script project and a Google
 
 ## Watchpoints
 -   Rules are executed in order. If a message is caught by an earlier rule, it will not be picked up by a later rule. Consider placing broad rules (e.g. by sender) later in the list.
--   The user account that is going to be executing the script (and own the Gmail inbox) must be granted Editor permission on any Drive folder to which it is going to deposit files.
+-   The user account that is going to be executing the script (and own the Gmail inbox) must be granted Editor permission on any Drive folder (destination ID) to which it is going to deposit files.
