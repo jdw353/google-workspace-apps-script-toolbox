@@ -7,3 +7,4 @@ A collection of scripts for Google Workspace admins and users who leverage Works
  * [IP Range Monitor](ip-range-monitor)
  * [User Alias Report](user-alias-report)
  * [Calendar Clone](calendar-clone)
+ * [Attachment Archiver](attachment-archiver)
