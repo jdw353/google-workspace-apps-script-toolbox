@@ -53,7 +53,7 @@ In order for the script to work, it must be initialized and granted the necessar
 -   Sheets (https://www.googleapis.com/auth/spreadsheets)
 
 ### Configuration
-There are 3 variables in the code itself that may require modification before execution:
+There are 4 variables in the code itself that may require modification before execution:
 -   MAX_EMAILS: the maximum size of the Gmail search (default 20).
 -   TRIGGER_MINUTES: how often the script runs and checks for new messages (default 15).
 -   RULES_SHEET_ID: the ID of the Google Sheet where the Rules can be found.
