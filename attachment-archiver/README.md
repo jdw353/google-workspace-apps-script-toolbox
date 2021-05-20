@@ -25,7 +25,6 @@ Rules are contained in a Google Sheet and contain six attributes (that must be l
 Feel free to make a copy of this [template rule sheet](https://docs.google.com/spreadsheets/d/15KfB7d7zxDaJvptfWlDezPh7CUzMgPgT8pFfy7gkL0w), which look like:
 ![template rule sheet](rules_template.png)
 
-
 ### Trigger Types
 Triggers are the criteria by which a message will be evaluated to see if it matches a rule.
 -   POSTFIX: Looking for a specific keyword appended with + to the end of an email address.
@@ -78,7 +77,8 @@ This application consists of two components: an Apps Script project and a Google
 -   Send a test email to the inbox that matches your configured rules and manually run processRules(). Debug statements will provide insights on matches and actions.
 
 ## Watchpoints
--   Rules are executed in order. If a message is caught by an earlier rule, it will not be picked up by a later rule. Consider placing broad rules (e.g. by sender) later in the list.
+-   The script is currently configured to process 20 messages every 15 minutes for each rule. 20 messages every 15 minutes is 1,920 messages per day. However, [Apps Script does have limits](https://developers.google.com/apps-script/guides/services/quotas#current_limitations). If Apps Script does time out, missed messages will be picked up in the next scan. If you require more throughput, consider using an additional user account or moving to App Engine.
+-   Rules are executed in order. If a message is caught by an earlier rule, it will not be picked up by a later rule. Consider placing broad rules (e.g. by sender) later in the list. Earlier rules also have less of a chance of timing out than later rules.
 -   Only the first message in a thread is processed. Replies, even with attachments, will be ignored; however, the first message will be processed again (creating duplicates). New submissions should always be sent as a new message.
 -   The user account that is going to be executing the script (and own the Gmail inbox) must be granted Editor permission on any Drive folder (destination ID) to which it is going to deposit files.
 -   Gmail has a [max attachment size](https://support.google.com/a/answer/1366776). For workflows with files greater than this limit, other methods should be employed.
