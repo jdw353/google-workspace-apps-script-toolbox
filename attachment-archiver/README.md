@@ -7,11 +7,11 @@ Automatically intercept emails to the active user's inbox and based on configure
 Remove email from any workflow where users process files from senders external to the organization and do not need the ability to communicate in response. Leveraging this script allows for the creation of a centralized email address that can be utilized by multiple teams.
 
 ## How it works
-The script first looks to a linked Google Sheet for the rules it should process. For each rule (processed in order), it queries the active user's Gmail inbox to find unread messages that match the rule criteria.
+The script first looks to a linked Google Sheet for the rules it should process. For each rule (processed in order), it queries the active user's Gmail inbox to find unread message threads that match the rule criteria.
 
-Messages that are found to match the query will have their attachments saved to Drive and deposited in a location defined by the rule.
+Threads that are found to match the query will have their first message's attachments saved to Drive and deposited in a location defined by the rule.
 
-After a message is processed, it is marked as read and archived, which prevents it from being queried again in the future.
+After a thread is processed, it is marked as read and archived, which prevents it from being queried again in the future. If a thread becomes unread and added back to the inbox (manually or by replies), it will be processed again.
 
 ## Rules
 Rules are contained in a Google Sheet and contain six attributes (that must be listed in this order):
@@ -79,6 +79,6 @@ This application consists of two components: an Apps Script project and a Google
 
 ## Watchpoints
 -   Rules are executed in order. If a message is caught by an earlier rule, it will not be picked up by a later rule. Consider placing broad rules (e.g. by sender) later in the list.
--   Only the first message in a thread is processed. Replies, even with attachments, will be skipped. New submissions should always be sent as a new message.
+-   Only the first message in a thread is processed. Replies, even with attachments, will be ignored; however, the first message will be processed again (creating duplicates). New submissions should always be sent as a new message.
 -   The user account that is going to be executing the script (and own the Gmail inbox) must be granted Editor permission on any Drive folder (destination ID) to which it is going to deposit files.
 -   Gmail has a [max attachment size](https://support.google.com/mail/answer/6584). For workflows with files greater than this limit, other methods should be employed.
