@@ -80,3 +80,4 @@ This application consists of two components: an Apps Script project and a Google
 ## Watchpoints
 -   Rules are executed in order. If a message is caught by an earlier rule, it will not be picked up by a later rule. Consider placing broad rules (e.g. by sender) later in the list.
 -   The user account that is going to be executing the script (and own the Gmail inbox) must be granted Editor permission on any Drive folder (destination ID) to which it is going to deposit files.
+-   Gmail has a [max attachment size](https://support.google.com/mail/answer/6584). For workflows with files greater than this limit, other methods should be employed.
