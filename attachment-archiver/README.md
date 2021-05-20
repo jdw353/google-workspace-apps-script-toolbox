@@ -23,7 +23,7 @@ Rules are contained in a Google Sheet and contain six attributes (that must be l
 -   Domain View: Whether or not everyone in the domain should get view only permission to a file if they have the link.
 
 Feel free to make a copy of this [template rule sheet](https://docs.google.com/spreadsheets/d/15KfB7d7zxDaJvptfWlDezPh7CUzMgPgT8pFfy7gkL0w), which look like:
-![template rule sheet](rules.png)
+![template rule sheet](rules_template.png)
 
 
 ### Trigger Types
