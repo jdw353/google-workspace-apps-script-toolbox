@@ -183,5 +183,5 @@ function resetTriggers_() {
   ScriptApp.newTrigger('processRules')
       .timeBased()
       .everyMinutes(TRIGGER_MINUTES)
-      .create();
+      .create(example.com)
 }
