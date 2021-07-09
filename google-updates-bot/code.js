@@ -1,35 +1,51 @@
 /*
-  Google Workspace Updates Bot
+  Google Chat Updates Bot
+  github.com/jdw353
 
   TL;DR:
-  Keep up to date with all Google Workspace feature releases and updates by having
-  updates from workspaceupdates.googleblog.com published to a Google Chat room.
+  Keep up to date with any feed by having new posts published to a Google Chat
+  room using Apps Script and Webhooks. Feeds included in this example are
+  various official Google blogs.
 
-  Specifics:
-  - Deploy as one Apps Script project and file.
-  - Polls the RSS feed for Google Workspace Updates and parses the XML.
-  - Evaluates whether or not the update has been seen. If it has, it's skipped.
-    If it's new, it is queued for posting.
-  - State is saved for next run.
-  - New posts are published to configured Chat rooms.
+  How it works:
+  - The script is deployed as a single Apps Script project and file.
+  - initializeScript() is run first, which requests scope authorization, clears
+  local storage, adds a timer trigger, and kicks off the primary workflow.
+  - executeUpdateWorkflow() will then pull down records for each configured feed
+  and determine whether or not it has been before by the script (using local
+  storage). If it has been seen, it is skipped. If it's new, it is queued for
+  posting. Local storage is updated accordingly.
+  - New posts are then published to any subscribed Chat room using Webhooks.
 
-  Configuration:
-  - You must provide a webhook URL in the YOUR_WEBHOOK_URL_GOES_HERE space.
-  - You may modify MAX_CONTENT_CHARS, MAX_INIT_UPDATES.
-  - There's no real good reason for updating MAX_CONTENT_UPDATES.
-  - FeedFormat and WebhookPlatform can be expanded on to include other types.
+  Script Configuration:
+  Modify the below variables to match requirements. All are required, but most
+  can be left as default.
+  - WEBHOOKS: the destination for any published posts. You must provide a
+  webhook URL in the YOUR_WEBHOOK_URL_GOES_HERE space
+  - MAX_CONTENT_CHARS: the length of the article summary that is included in the
+  Chat card
+  - MAX_INIT_UPDATES: when initializing the script, how many initial posts to
+  send to a room
+  - MAX_CONTENT_UPDATES: the number of new updates to send. Generally does not
+  need to be updated
+  - TRIGGER_INTERVAL_HOURS: how often the script will check for updates
+
+  Script Extension
+  This script was made to handle the various formats of the supported Google
+  blogs. However, it can easily be extended to support other feed formats or
+  webhook platforms. FEED_FORMAT: a type of feed input, requring a name and a
+  parseFunction WEBHOOK_PLATFORMS: a type of webook output, requring a name and
+  a viewFunction
 */
 
-var TRIGGER_INTERVAL_HOURS = 1;
-var MAX_CONTENT_CHARS = 250;
-
+const TRIGGER_INTERVAL_HOURS = 1;
+const MAX_CONTENT_CHARS = 250;
 // Cannot be greater than 25 for RSS.
-var MAX_CONTENT_UPDATES = 10;
-
+const MAX_CONTENT_UPDATES = 10;
 // Should not be greater than MAX_CONTENT_UPDATES.
-var MAX_INIT_UPDATES = 1;
+const MAX_INIT_UPDATES = 1;
 
-var FeedFormat = {
+const FEED_FORMAT = {
   FB_XML: {
     name: 'Feed Burner XML',
     parseFunction: parseFBXmlIntoUpdateObject_,
@@ -40,49 +56,72 @@ var FeedFormat = {
   }
 };
 
-var WebhookPlatform = {
-  GOOGLE_CHAT: {name: 'Google Chat', view: buildGoogleChatView_}
-};
-
-// Replace YOUR_WEBHOOK_URL_GOES_HERE with a webhook URL from Google Chat.
-var WEBHOOKS = {
-  ADMIN_ROOM: {
-    name: 'Google Workspace Admin Room',
-    type: WebhookPlatform.GOOGLE_CHAT,
-    url: 'YOUR_WEBHOOK_URL_GOES_HERE'
+const WEBHOOK_PLATFORMS = {
+  GOOGLE_CHAT: {
+    name: 'Google Chat',
+    viewFunction: buildGoogleChatView_,
   }
 };
 
-var FEEDS = {
-  GSU: {
-    format: FeedFormat.FB_XML,
+// Replace YOUR_WEBHOOK_URL_GOES_HERE with a webhook URL from Google Chat.
+const WEBHOOKS = {
+  ADMIN_ROOM: {
+    name: 'Google Workspace Admin Room',
+    type: WEBHOOK_PLATFORMS.GOOGLE_CHAT,
+    url: 'YOUR_WEBHOOK_URL_GOES_HERE'
+  },
+  WEXBOX: {
+    name: 'Wex Webhook Sandbox',
+    type: WEBHOOK_PLATFORMS.GOOGLE_CHAT,
+    url: 'https://chat.googleapis.com/v1/spaces/AAAAfY2EqDI/messages?' +
+        'key=AIzaSyDdI0hCZtE6vySjMm-WEfRq3CPzqKqqsHI&' +
+        'token=WQtKwUreq3YDK5lVJrL94Ms1sZ9BqANCMlGJI3PMnmM%3D'
+  },
+};
+
+const FEEDS = {
+  WORKSPACE_UPDATES: {
+    format: FEED_FORMAT.FB_XML,
     title: 'Google Workspace Updates',
     subtitle: 'workspaceupdates.googleblog.com',
     source: 'http://feeds.feedburner.com/GoogleAppsUpdates',
     logo: 'http://www.stickpng.com/assets/images/5847f9cbcef1014c0b5e48c8.png',
     cta: 'READ MORE',
     filters: ['What’s changing', 'Quick launch summary'],
-    webhooks: [WEBHOOKS.ADMIN_ROOM]
+    webhooks: [WEBHOOKS.WEXBOX]
   },
-  CRB: {
-    format: FeedFormat.FB_XML,
+  CHROME_RELEASES: {
+    format: FEED_FORMAT.FB_XML,
     title: 'Chrome Releases',
     subtitle: 'chromereleases.googleblog.com',
     source: 'http://feeds.feedburner.com/GoogleChromeReleases',
     logo: 'https://storage.googleapis.com/kimberlybucket001/chrome.png',
     cta: 'READ MORE',
-    filters: [],
-    webhooks: [WEBHOOKS.ADMIN_ROOM]
+    filters: ['Hi everyone!'],
+    webhooks: [WEBHOOKS.WEXBOX]
   },
-  TCB: {
-    format: FeedFormat.GOOGLE_BLOG_RSS,
+  GCP_TRAINING: {
+    format: FEED_FORMAT.GOOGLE_BLOG_RSS,
     title: 'GCP Training & Certification',
     subtitle: 'cloudblog.withgoogle.com',
-    source: 'https://cloudblog.withgoogle.com/topics/training-certifications/rss/',
-    logo: 'https://cdn.iconscout.com/icon/free/png-256/google-cloud-2038785-1721675.png',
+    source:
+        'https://cloudblog.withgoogle.com/topics/training-certifications/rss/',
+    logo:
+        'https://cdn.iconscout.com/icon/free/png-256/google-cloud-2038785-1721675.png',
     cta: 'READ MORE',
     filters: [],
-    webhooks: [WEBHOOKS.ADMIN_ROOM]
+    webhooks: [WEBHOOKS.WEXBOX]
+  },
+  DEVELOPERS: {
+    format: FEED_FORMAT.FB_XML,
+    title: 'Google Developers',
+    subtitle: 'developers.googleblog.com',
+    source: 'http://feeds.feedburner.com/GDBcode',
+    logo:
+        'https://yt3.ggpht.com/ytc/AKedOLSsnWm_dQzIqM-qgW74yebXNX_b__k6WAeUBb6GeGQ=s176-c-k-c0x00ffffff-no-rj',
+    cta: 'READ MORE',
+    filters: [],
+    webhooks: [WEBHOOKS.WEXBOX]
   }
 };
 
@@ -108,8 +147,8 @@ function initializeScript() {
 function executeUpdateWorkflow(initialization) {
   Object.keys(FEEDS).forEach(function(feed) {
     try {
-      var feedUpdates = fetchLatestUpdates_(feed);
-      var newUpdates = checkForNewUpdates_(feed, feedUpdates);
+      let feedUpdates = fetchLatestUpdates_(feed);
+      let newUpdates = checkForNewUpdates_(feed, feedUpdates);
       if (newUpdates) {
         // The initialization flag is only set when this function is called from
         // initializeScript(). In order to not spam a webook, the results get
@@ -127,10 +166,10 @@ function executeUpdateWorkflow(initialization) {
 }
 
 function logScriptProperties() {
-  var feedUpdates = PropertiesService.getScriptProperties().getProperties();
+  let feedUpdates = PropertiesService.getScriptProperties().getProperties();
   Object.keys(feedUpdates).forEach(function(id) {
-    var updates = JSON.parse(feedUpdates[id]);
-    Logger.log('Feed: %s', id);
+    let updates = JSON.parse(feedUpdates[id]);
+    Logger.log(`Feed: ${id}`);
     Logger.log(updates);
   });
 }
@@ -140,9 +179,9 @@ function logScriptProperties() {
  */
 
 function fetchLatestUpdates_(feed) {
-  var updates = [];
+  let updates = [];
 
-  var results =
+  let results =
       UrlFetchApp.fetch(FEEDS[feed].source, {muteHttpExceptions: true});
 
   if (results.getResponseCode() !== 200) {
@@ -153,7 +192,7 @@ function fetchLatestUpdates_(feed) {
   updates = FEEDS[feed].format.parseFunction(feed, results.getContentText());
 
   // Cap the number of updates that are processed and stored.
-  var recordsToRemove = updates.length - MAX_CONTENT_UPDATES;
+  let recordsToRemove = updates.length - MAX_CONTENT_UPDATES;
   if (recordsToRemove > 0) {
     updates.splice(-recordsToRemove, recordsToRemove);
   }
@@ -166,10 +205,10 @@ function checkForNewUpdates_(feed, feedUpdates) {
     return [];
   }
 
-  var newUpdates = [];
-  var latestUpdates = [];
-  var properties = PropertiesService.getScriptProperties().getProperties();
-  var existingUpdates = properties[feed] ? JSON.parse(properties[feed]) : [];
+  let newUpdates = [];
+  let latestUpdates = [];
+  let properties = PropertiesService.getScriptProperties().getProperties();
+  let existingUpdates = properties[feed] ? JSON.parse(properties[feed]) : [];
 
   // For each update, determine if we've seen it before based on the ID's
   // existence in the script's storage. If we haven't seen it yet, store
@@ -185,13 +224,14 @@ function checkForNewUpdates_(feed, feedUpdates) {
   properties[feed] = JSON.stringify(latestUpdates);
   PropertiesService.getScriptProperties().setProperties(properties, true);
 
+  Logger.log(`${feed}: ${newUpdates.length} new updates were found.`);
   return newUpdates;
 }
 
 function sendUpdatesToWebhooks_(feed, newUpdates) {
   FEEDS[feed].webhooks.forEach(function(webhook) {
     newUpdates.forEach(function(update) {
-      var updateView = webhook.type.view(FEEDS[feed], update);
+      let updateView = webhook.type.viewFunction(FEEDS[feed], update);
       postUpdate_(webhook.url, updateView);
     });
   });
@@ -199,7 +239,7 @@ function sendUpdatesToWebhooks_(feed, newUpdates) {
 
 function postUpdate_(url, updateView) {
   try {
-    var options = {
+    let options = {
       'contentType': 'application/json; charset=UTF-8',
       'method': 'post',
       'payload': JSON.stringify(updateView),
@@ -213,19 +253,19 @@ function postUpdate_(url, updateView) {
 }
 
 function parseFBXmlIntoUpdateObject_(feed, feedXml) {
-  var updates = [];
-  var document = XmlService.parse(feedXml);
-  var atom = XmlService.getNamespace('http://www.w3.org/2005/Atom');
-  var entries = document.getRootElement().getChildren('entry', atom);
+  let updates = [];
+  let document = XmlService.parse(feedXml);
+  let atom = XmlService.getNamespace('http://www.w3.org/2005/Atom');
+  let entries = document.getRootElement().getChildren('entry', atom);
 
   entries.forEach(function(entry) {
-    var id = entry.getChild('id', atom).getText();
-    var publishedDate = entry.getChild('published', atom).getText();
-    var title = entry.getChild('title', atom).getText();
-    var content = entry.getChild('content', atom).getText();
-    var linkOptions = entry.getChildren('link', atom);
-    var link = '';
-    for (var i = 0; i < linkOptions.length; i++) {
+    let id = entry.getChild('id', atom).getText();
+    let publishedDate = entry.getChild('published', atom).getText();
+    let title = entry.getChild('title', atom).getText();
+    let content = entry.getChild('content', atom).getText();
+    let linkOptions = entry.getChildren('link', atom);
+    let link = '';
+    for (let i = 0; i < linkOptions.length; i++) {
       if (linkOptions[i].getAttribute('rel').getValue() === 'alternate') {
         link = linkOptions[i].getAttribute('href').getValue();
         break;
@@ -239,18 +279,19 @@ function parseFBXmlIntoUpdateObject_(feed, feedXml) {
 }
 
 function parseGoogleBlogRssIntoUpdateObject_(feed, feedXml) {
-  var updates = [];
-  var document = XmlService.parse(feedXml);
-  var entries = document.getRootElement().getChild('channel').getChildren('item');
+  let updates = [];
+  let document = XmlService.parse(feedXml);
+  let entries =
+      document.getRootElement().getChild('channel').getChildren('item');
 
   entries.forEach(function(entry) {
-    var guid = entry.getChild('guid').getText();
-    var publishedDate = entry.getChild('pubDate').getText();
-    var title = entry.getChild('title').getText();
-    var description = entry.getChild('description').getText();
-    var link = entry.getChild('link').getText();
-    updates.push(
-        buildUpdateObject_(feed, guid, publishedDate, title, description, link));
+    let guid = entry.getChild('guid').getText();
+    let publishedDate = entry.getChild('pubDate').getText();
+    let title = entry.getChild('title').getText();
+    let description = entry.getChild('description').getText();
+    let link = entry.getChild('link').getText();
+    updates.push(buildUpdateObject_(
+        feed, guid, publishedDate, title, description, link));
   });
 
   return updates;
@@ -258,7 +299,7 @@ function parseGoogleBlogRssIntoUpdateObject_(feed, feedXml) {
 
 function buildUpdateObject_(feed, id, date, title, content, link) {
   // Remove some special characters and any filters that are specific to a feed.
-  var finalContent = content.replace(/<[^>]+>/g, '');
+  let finalContent = content.replace(/<[^>]+>/g, '');
   FEEDS[feed].filters.forEach(function(filter) {
     finalContent = finalContent.replace(filter, '');
   });
@@ -279,7 +320,7 @@ function clearProperties_() {
 
 function resetTriggers_() {
   // First clear all the triggers.
-  var triggers = ScriptApp.getProjectTriggers();
+  let triggers = ScriptApp.getProjectTriggers();
   triggers.forEach(function(trigger) {
     ScriptApp.deleteTrigger(trigger);
   });
@@ -302,7 +343,7 @@ function buildGoogleChatView_(feed, update) {
       'sections': [
         {
           'widgets': [
-            {'textParagraph': {'text': '<b>' + update.title + '</b>'}},
+            {'textParagraph': {'text': `<b>${update.title}</b>`}},
             {'textParagraph': {'text': update.content}}
           ]
         },
