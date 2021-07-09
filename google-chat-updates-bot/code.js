@@ -72,13 +72,6 @@ const WEBHOOKS = {
     type: WEBHOOK_PLATFORMS.GOOGLE_CHAT,
     url: 'YOUR_WEBHOOK_URL_GOES_HERE'
   },
-  WEXBOX: {
-    name: 'Wex Webhook Sandbox',
-    type: WEBHOOK_PLATFORMS.GOOGLE_CHAT,
-    url: 'https://chat.googleapis.com/v1/spaces/AAAAfY2EqDI/messages?' +
-        'key=AIzaSyDdI0hCZtE6vySjMm-WEfRq3CPzqKqqsHI&' +
-        'token=WQtKwUreq3YDK5lVJrL94Ms1sZ9BqANCMlGJI3PMnmM%3D'
-  },
 };
 
 const FEEDS = {
@@ -90,7 +83,7 @@ const FEEDS = {
     logo: 'http://www.stickpng.com/assets/images/5847f9cbcef1014c0b5e48c8.png',
     cta: 'READ MORE',
     filters: ['What’s changing', 'Quick launch summary'],
-    webhooks: [WEBHOOKS.WEXBOX]
+    webhooks: [WEBHOOKS.ADMIN_ROOM]
   },
   CHROME_RELEASES: {
     format: FEED_FORMAT.FB_XML,
@@ -100,7 +93,7 @@ const FEEDS = {
     logo: 'https://storage.googleapis.com/kimberlybucket001/chrome.png',
     cta: 'READ MORE',
     filters: ['Hi everyone!'],
-    webhooks: [WEBHOOKS.WEXBOX]
+    webhooks: [WEBHOOKS.ADMIN_ROOM]
   },
   GCP_TRAINING: {
     format: FEED_FORMAT.GOOGLE_BLOG_RSS,
@@ -112,7 +105,7 @@ const FEEDS = {
         'https://cdn.iconscout.com/icon/free/png-256/google-cloud-2038785-1721675.png',
     cta: 'READ MORE',
     filters: [],
-    webhooks: [WEBHOOKS.WEXBOX]
+    webhooks: [WEBHOOKS.ADMIN_ROOM]
   },
   DEVELOPERS: {
     format: FEED_FORMAT.FB_XML,
@@ -123,7 +116,7 @@ const FEEDS = {
         'https://yt3.ggpht.com/ytc/AKedOLSsnWm_dQzIqM-qgW74yebXNX_b__k6WAeUBb6GeGQ=s176-c-k-c0x00ffffff-no-rj',
     cta: 'READ MORE',
     filters: [],
-    webhooks: [WEBHOOKS.WEXBOX]
+    webhooks: [WEBHOOKS.ADMIN_ROOM]
   }
 };
 
