@@ -33,8 +33,10 @@
   Script Extension
   This script was made to handle the various formats of the supported Google
   blogs. However, it can easily be extended to support other feed formats or
-  webhook platforms. FEED_FORMAT: a type of feed input, requring a name and a
-  parseFunction WEBHOOK_PLATFORMS: a type of webook output, requring a name and
+  webhook platforms. 
+  - FEED_FORMAT: a type of feed input, requring a name and a
+  parseFunction
+  - WEBHOOK_PLATFORMS: a type of webook output, requring a name and
   a viewFunction
 */
 
