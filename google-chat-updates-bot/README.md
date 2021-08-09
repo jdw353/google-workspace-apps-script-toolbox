@@ -10,7 +10,8 @@ Keep up to date with any feed by having new posts published to a Google Chat roo
 - [Google Developers Blog](https://developers.googleblog.com/)
 
 ### End result
-<img src="examplepost.png" alt="example post" width="500"/>
+<img src="examplepost.png" alt="example post" width="300" style="max-width:100%;margin:2px;"/>
+<img src="examplepost2.png" alt="example post 2" width="300" style="max-width:100%;margin:2px;"/>
 
 ## Why you would use it
 Bring information from feeds directly into your Google Chat room, where members can comment or react directly inline with the content. This might include product updates regarding Google Workspace, code updates from a repository, or news from relevant sources.
