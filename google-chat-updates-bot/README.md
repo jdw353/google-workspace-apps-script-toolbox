@@ -27,11 +27,14 @@ In order for the script to work, it must be initialized and granted the necessar
 -   Apps Script (https://www.googleapis.com/auth/script.external_request)
 
 ### Configuration
-There are 4 variables in the code itself that may require modification before execution:
--   MAX_CONTENT_CHARS: the length of the article summary that is included in theChat card
+There are 7 variables in the code itself that may require modification before execution:
 -   MAX_INIT_UPDATES: when initializing the script, how many initial posts tosend to a room
--   MAX_CONTENT_UPDATES: the number of new updates to send. Generally does not need to be updated
+-   MAX_CONTENT.CHARS: the length of the article summary that is included in theChat card
+-   MAX_CONTENT.UPDATES: the number of new updates to send. Generally does not need to be updated
 -   TRIGGER_INTERVAL_HOURS: how often the script will check for updates
+-   NOTIFY_HOURS.START: hour of the day after which notifications can be sent (local time)
+-   NOTIFY_HOURS.END: hour of the day after which no notifications should be sent (local time)
+-   NOTIFY_WEEKEND: whether the script should run on the weekend (local time)
 
 ### Extensibility
 This script was made to handle the various formats of the supported Google blogs. However, it can easily be extended to support other feed formats or webhook platforms. 

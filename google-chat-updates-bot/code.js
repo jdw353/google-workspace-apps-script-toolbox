@@ -29,9 +29,9 @@
   - MAX_INIT_UPDATES: when initializing the script, how many initial posts to
   send to a room
   - TRIGGER_INTERVAL_HOURS: how often the script will check for updates
-  - NOTIFY_HOURS.START: hour of the day after which notifications can be sent
-  - NOTIFY_HOURS.END: hour of the day after which no notifications should be sent
-  - NOTIFY_WEEKEND: whether the script should run on the weekend
+  - NOTIFY_HOURS.START: hour of the day after which notifications can be sent (local time)
+  - NOTIFY_HOURS.END: hour of the day after which no notifications should be sent (local time)
+  - NOTIFY_WEEKEND: whether the script should run on the weekend (local time)
 
   Script Extension
   This script was made to handle the various formats of the supported Google
