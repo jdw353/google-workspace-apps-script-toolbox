@@ -148,7 +148,7 @@ function initializeScript() {
 }
 
 function executeUpdateWorkflow(initialization) {
-// Skip execution if we're not initializing or outside of notification hours.
+  // Skip execution if we're not initializing or outside of notification hours.
   if (!(initialization || isValidExecutionWindow_())) {
     return;
   }
