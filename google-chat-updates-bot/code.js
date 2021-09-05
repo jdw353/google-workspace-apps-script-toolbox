@@ -22,13 +22,16 @@
   can be left as default.
   - WEBHOOKS: the destination for any published posts. You must provide a
   webhook URL in the YOUR_WEBHOOK_URL_GOES_HERE space
-  - MAX_CONTENT_CHARS: the length of the article summary that is included in the
+  - MAX_CONTENT.CHARS: the length of the article summary that is included in the
   Chat card
+  - MAX_CONTENT.UPDATES: the number of new updates to send. Generally does not
+  need to be updated
   - MAX_INIT_UPDATES: when initializing the script, how many initial posts to
   send to a room
-  - MAX_CONTENT_UPDATES: the number of new updates to send. Generally does not
-  need to be updated
   - TRIGGER_INTERVAL_HOURS: how often the script will check for updates
+  - NOTIFY_HOURS.START: hour of the day after which notifications can be sent
+  - NOTIFY_HOURS.END: hour of the day after which no notifications should be sent
+  - NOTIFY_WEEKEND: whether the script should run on the weekend
 
   Script Extension
   This script was made to handle the various formats of the supported Google
@@ -41,11 +44,16 @@
 */
 
 const TRIGGER_INTERVAL_HOURS = 1;
-const MAX_CONTENT_CHARS = 250;
-// Cannot be greater than 25 for RSS.
-const MAX_CONTENT_UPDATES = 10;
-// Should not be greater than MAX_CONTENT_UPDATES.
+const NOTIFY_WEEKEND = false;
 const MAX_INIT_UPDATES = 1;
+const MAX_CONTENT = {
+  CHARS: 250,
+  UPDATES: 10 // Cannot be greater than 25 for RSS.
+};
+const NOTIFY_HOURS = {
+  START: 9,
+  END: 17
+};
 
 const FEED_FORMAT = {
   FB_XML: {
@@ -140,6 +148,11 @@ function initializeScript() {
 }
 
 function executeUpdateWorkflow(initialization) {
+// Skip execution if we're not initializing or outside of notification hours.
+  if (!(initialization || isValidExecutionWindow_())) {
+    return;
+  }
+
   Object.keys(FEEDS).forEach(function(feed) {
     try {
       let feedUpdates = fetchLatestUpdates_(feed);
@@ -173,6 +186,14 @@ function logScriptProperties() {
  * Workflow (Private) Functions
  */
 
+function isValidExecutionWindow_() {
+  let date = new Date();
+  let validDay = (NOTIFY_WEEKEND || !(date.getDay() === 0 || date.getDay() === 6));
+  let validHour = (date.getHours() >= NOTIFY_HOURS.START && date.getHours() < NOTIFY_HOURS.END);
+  Logger.log(`${Session.getScriptTimeZone()}: valid day (${validDay}), valid hour (${validHour})`);
+  return (validDay && validHour);
+}
+
 function fetchLatestUpdates_(feed) {
   let updates = [];
 
@@ -187,7 +208,7 @@ function fetchLatestUpdates_(feed) {
   updates = FEEDS[feed].format.parseFunction(feed, results.getContentText());
 
   // Cap the number of updates that are processed and stored.
-  let recordsToRemove = updates.length - MAX_CONTENT_UPDATES;
+  let recordsToRemove = updates.length - MAX_CONTENT.UPDATES;
   if (recordsToRemove > 0) {
     updates.splice(-recordsToRemove, recordsToRemove);
   }
@@ -304,7 +325,7 @@ function buildUpdateObject_(feed, id, date, title, content, link) {
     id: id,
     date: new Date(date).toDateString(),
     title: title,
-    content: finalContent.substring(0, MAX_CONTENT_CHARS).trim() + '...',
+    content: finalContent.substring(0, MAX_CONTENT.CHARS).trim() + '...',
     link: link
   };
 }
