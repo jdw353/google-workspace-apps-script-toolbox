@@ -141,13 +141,13 @@ function initializeScript() {
 
   // Kicks off first fetch of feed updates. Set a flag to true that is only
   // modified here to alert that this is the first time the function is running.
-  executeUpdateWorkflow(true);
+  executeUpdateWorkflow(null, true);
 
   // Logs the storage for manual validation.
   logScriptProperties();
 }
 
-function executeUpdateWorkflow(initialization) {
+function executeUpdateWorkflow(trigger, initialization) {
   // Skip execution if we're not initializing or outside of notification hours.
   if (!(initialization || isValidExecutionWindow_())) {
     return;
