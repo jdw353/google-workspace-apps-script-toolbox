@@ -87,8 +87,8 @@ const FEEDS = {
     format: FEED_FORMAT.FB_XML,
     title: 'Google Workspace Updates',
     subtitle: 'workspaceupdates.googleblog.com',
-    source: 'http://feeds.feedburner.com/GoogleAppsUpdates',
-    logo: 'http://www.stickpng.com/assets/images/5847f9cbcef1014c0b5e48c8.png',
+    source: 'https://feeds.feedburner.com/GoogleAppsUpdates',
+    logo: 'https://fonts.gstatic.com/s/i/productlogos/googleg/v6/web-512dp/logo_googleg_color_1x_web_512dp.png',
     cta: 'READ MORE',
     filters: ['What’s changing', 'Quick launch summary'],
     webhooks: [WEBHOOKS.ADMIN_ROOM]
@@ -97,8 +97,8 @@ const FEEDS = {
     format: FEED_FORMAT.FB_XML,
     title: 'Chrome Releases',
     subtitle: 'chromereleases.googleblog.com',
-    source: 'http://feeds.feedburner.com/GoogleChromeReleases',
-    logo: 'https://storage.googleapis.com/kimberlybucket001/chrome.png',
+    source: 'https://feeds.feedburner.com/GoogleChromeReleases',
+    logo: 'https://fonts.gstatic.com/s/i/productlogos/chrome/v6/web-512dp/logo_chrome_color_1x_web_512dp.png',
     cta: 'READ MORE',
     filters: ['Hi everyone!'],
     webhooks: [WEBHOOKS.ADMIN_ROOM]
@@ -110,7 +110,7 @@ const FEEDS = {
     source:
         'https://cloudblog.withgoogle.com/topics/training-certifications/rss/',
     logo:
-        'https://cdn.iconscout.com/icon/free/png-256/google-cloud-2038785-1721675.png',
+        'https://fonts.gstatic.com/s/i/productlogos/google_cloud/v8/web-512dp/logo_google_cloud_color_1x_web_512dp.png',
     cta: 'READ MORE',
     filters: [],
     webhooks: [WEBHOOKS.ADMIN_ROOM]
@@ -119,9 +119,9 @@ const FEEDS = {
     format: FEED_FORMAT.FB_XML,
     title: 'Google Developers',
     subtitle: 'developers.googleblog.com',
-    source: 'http://feeds.feedburner.com/GDBcode',
+    source: 'https://feeds.feedburner.com/GDBcode',
     logo:
-        'https://yt3.ggpht.com/ytc/AKedOLSsnWm_dQzIqM-qgW74yebXNX_b__k6WAeUBb6GeGQ=s176-c-k-c0x00ffffff-no-rj',
+        'https://fonts.gstatic.com/s/i/productlogos/google_developers/v7/web-512dp/logo_google_developers_color_1x_web_512dp.png',
     cta: 'READ MORE',
     filters: [],
     webhooks: [WEBHOOKS.ADMIN_ROOM]
