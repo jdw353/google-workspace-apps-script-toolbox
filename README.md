@@ -8,3 +8,4 @@ A collection of scripts for Google Workspace admins and users who leverage Works
  * [User Alias Report](user-alias-report)
  * [Calendar Clone](calendar-clone)
  * [Attachment Archiver](attachment-archiver)
+ * [Gmail Flatten Labels](gmail-flatten-labels)
