@@ -82,6 +82,7 @@ const WEBHOOKS = {
   },
 };
 
+// Determine which feeds get broadcast to which webhooks by modifying the `webhooks` attribute for each feed.
 const FEEDS = {
   WORKSPACE_UPDATES: {
     format: FEED_FORMAT.FB_XML,
