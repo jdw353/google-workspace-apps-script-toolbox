@@ -154,7 +154,8 @@ function executeUpdateWorkflow(trigger, initialization) {
     return;
   }
 
-  Object.keys(FEEDS).forEach(function(feed) {
+  // If a feed is not configured to send to a webhook, no need to fetch updates.
+  Object.keys(FEEDS).filter(feed => FEEDS[feed].webhooks.length > 0).forEach(function(feed) {
     try {
       let feedUpdates = fetchLatestUpdates_(feed);
       let newUpdates = checkForNewUpdates_(feed, feedUpdates);
