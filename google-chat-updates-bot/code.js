@@ -43,12 +43,15 @@
   a viewFunction
 */
 
+// Importing utility to help with URI parsing.
+eval(UrlFetchApp.fetch('https://rawgit.com/medialize/URI.js/gh-pages/src/URI.js').getContentText());
+
 const TRIGGER_INTERVAL_HOURS = 1;
 const NOTIFY_WEEKEND = false;
 const MAX_INIT_UPDATES = 1;
 const MAX_CONTENT = {
   CHARS: 250,
-  UPDATES: 10 // Cannot be greater than 25 for RSS.
+  UPDATES: 20 // Cannot be greater than 25 for RSS.
 };
 const NOTIFY_HOURS = {
   START: 9,
@@ -228,12 +231,14 @@ function checkForNewUpdates_(feed, feedUpdates) {
   let properties = PropertiesService.getScriptProperties().getProperties();
   let existingUpdates = properties[feed] ? JSON.parse(properties[feed]) : [];
 
-  // For each update, determine if we've seen it before based on the ID's
-  // existence in the script's storage. If we haven't seen it yet, store
-  // it separately for use later in broadcasting.
+  // For each update, determine if we've seen it before based on the URL path's
+  // existence in the script's storage. If we haven't seen it yet, store the
+  // update for use later in broadcasting. URL paths tend to not change when posts
+  // are updated, whereas the IDs tend to change on updates, hence using them.
   feedUpdates.forEach(function(update) {
-    latestUpdates.push(update.id);
-    if (existingUpdates.indexOf(update.id) === -1) {
+    const path = getURLPath_(update.link);
+    latestUpdates.push(path);
+    if (existingUpdates.indexOf(path) === -1) {
       newUpdates.push(update);
     }
   });
@@ -330,6 +335,10 @@ function buildUpdateObject_(feed, id, date, title, content, link) {
     content: finalContent.substring(0, MAX_CONTENT.CHARS).trim() + '...',
     link: link
   };
+}
+
+function getURLPath_(link) {
+  return URI(link).path();
 }
 
 function clearProperties_() {
