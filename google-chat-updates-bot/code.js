@@ -207,7 +207,7 @@ function fetchLatestUpdates_(feed) {
 
   if (results.getResponseCode() !== 200) {
     Logger.log(results.message);
-    return updates;
+    return null;
   }
 
   updates = FEEDS[feed].format.parseFunction(feed, results.getContentText());
