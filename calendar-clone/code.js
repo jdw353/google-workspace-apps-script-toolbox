@@ -28,7 +28,7 @@ function cloneEvents_(date) {
 
   for (var i = 0; i < sourceEvents.length; i++) {
     var status = sourceEvents[i].getMyStatus();
-    if (status !== status.NO) {
+    if (!status || status !== status.NO) {
       var event = destination.createEvent(
         sourceEvents[i].getTitle(),
         sourceEvents[i].getStartTime(),
