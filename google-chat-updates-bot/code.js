@@ -376,7 +376,7 @@ function buildGoogleChatViewV1_(feed, update) {
         {
           'widgets': [
             {'textParagraph': {'text': `<b>${update.title}</b>`}},
-            {'textParagraph': {'text': update.content}}
+            {'textParagraph': {'text': update.snippet}}
           ]
         },
         {
