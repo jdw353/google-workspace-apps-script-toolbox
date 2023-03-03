@@ -50,7 +50,7 @@ const TRIGGER_INTERVAL_HOURS = 1;
 const NOTIFY_WEEKEND = false;
 const MAX_INIT_UPDATES = 1;
 const MAX_CONTENT = {
-  CHARS: 250,
+  CHARS: 300,
   UPDATES: 20 // Cannot be greater than 25 for RSS.
 };
 const NOTIFY_HOURS = {
@@ -72,7 +72,7 @@ const FEED_FORMAT = {
 const WEBHOOK_PLATFORMS = {
   GOOGLE_CHAT: {
     name: 'Google Chat',
-    viewFunction: buildGoogleChatView_,
+    viewFunction: buildGoogleChatViewV2_,
   }
 };
 
@@ -327,12 +327,17 @@ function buildUpdateObject_(feed, id, date, title, content, link) {
     finalContent = finalContent.replace(filter, '');
   });
 
+  let lastSpaceIndex = finalContent.substring(0, MAX_CONTENT.CHARS).lastIndexOf(' ');
+  let snippet = finalContent.substring(0, lastSpaceIndex).trim();
+  let fullContent = finalContent.substring(lastSpaceIndex, finalContent.length).trim();
+
   return {
     feed: feed,
     id: id,
     date: new Date(date).toDateString(),
     title: title,
-    content: finalContent.substring(0, MAX_CONTENT.CHARS).trim() + '...',
+    snippet: snippet + '...',
+    fullContent: (fullContent.length > 0) ? '...' + fullContent : '',
     link: link
   };
 }
@@ -359,7 +364,7 @@ function resetTriggers_() {
       .create();
 }
 
-function buildGoogleChatView_(feed, update) {
+function buildGoogleChatViewV1_(feed, update) {
   return {
     'cards': [{
       'header': {
@@ -387,4 +392,57 @@ function buildGoogleChatView_(feed, update) {
       ]
     }]
   };
+}
+
+function buildGoogleChatViewV2_(feed, update) {
+  return {
+    'cardsV2': [{
+      'cardId': update.id,
+      'card': {
+        'header': {
+          'title': feed.title,
+          'subtitle': feed.subtitle,
+          'imageUrl': feed.logo,
+          'imageType': 'CIRCLE',
+          'imageAltText': 'Logo for the feed'
+        },
+        'sections': [
+          {
+            'header': '',
+            'collapsible': false,
+            'uncollapsibleWidgetsCount': 1,
+            'widgets': [
+              {'textParagraph': {'text': `<b>${update.title}</b>`}},
+            ]
+          },
+          {
+            'header': '',
+            'collapsible': update.fullContent.length > 0,
+            'uncollapsibleWidgetsCount': 1,
+            'widgets': [
+              {'textParagraph': {'text': update.snippet}},
+              {'textParagraph': {'text': update.fullContent}}
+            ]
+          },
+          {
+            'header': '',
+            'collapsible': false,
+            'uncollapsibleWidgetsCount': 0,
+            'widgets': [
+              {
+                'buttonList': {
+                  'buttons': [
+                    {
+                      'text': feed.cta,
+                      'onClick': {'openLink': {'url': update.link}}
+                    }
+                  ]
+                }
+              }            
+            ]
+          }       
+        ],
+      }
+    }]
+  }
 }
