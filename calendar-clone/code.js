@@ -1,13 +1,14 @@
 // [SOURCE_CALENDAR_ID] and [DESTINATION_CALENDAR_ID]
 // For a primary calendar, this will be something like user@gmail.com.
 // For a secondary calendar, this will be something like xyz@group.calendar.google.com
-var SOURCE = '[SOURCE_CALENDAR_ID]';
-var DESTINATION = '[DESTINATION_CALENDAR_ID]';
-var NUM_DAYS = 14;
+
+const SOURCE = 'wex@google.com';
+const DESTINATION = 'oh3jhnto7ol9gj7k0qb63mrg2g@group.calendar.google.com';
+const NUM_DAYS = 14;
 
 function main() { 
-  var day = new Date();
-  for (var i = 0; i < NUM_DAYS; i++) {
+  const day = new Date();
+  for (let i = 0; i < NUM_DAYS; i++) {
     clearDestinationEvents_(day);
     cloneEvents_(day);
     day.setDate(day.getDate() + 1);
@@ -15,22 +16,29 @@ function main() {
 }
 
 function clearDestinationEvents_(date) {
-  var destinationEvents = CalendarApp.getCalendarById(DESTINATION).getEventsForDay(date);
+  const destinationEvents = CalendarApp.getCalendarById(DESTINATION).getEventsForDay(date);
   
+  Logger.log(`Clearing events for ${date}`)
   destinationEvents.forEach(function(event) {
     event.deleteEvent();
   });
 }
 
 function cloneEvents_(date) {
-  var sourceEvents = CalendarApp.getCalendarById(SOURCE).getEventsForDay(date);
-  var destination = CalendarApp.getCalendarById(DESTINATION);
+  const sourceEvents = CalendarApp.getCalendarById(SOURCE).getEventsForDay(date);
+  const destination = CalendarApp.getCalendarById(DESTINATION);
 
-  for (var i = 0; i < sourceEvents.length; i++) {
-    var status = sourceEvents[i].getMyStatus();
-    if (!status || status !== status.NO) {
-      var event = destination.createEvent(
-        sourceEvents[i].getTitle(),
+  for (let i = 0; i < sourceEvents.length; i++) {
+    Logger.log(`Cloning events for ${date}`)
+
+    const status = sourceEvents[i].getMyStatus();
+    const title = sourceEvents[i].getTitle();
+    const isAllDayEvent = sourceEvents[i].isAllDayEvent();
+
+    if ((!status || status !== status.NO) && !isEventWorkingLocation_(title, isAllDayEvent)) {
+      Logger.log(`${title} cloned`);
+      let event = destination.createEvent(
+        title,
         sourceEvents[i].getStartTime(),
         sourceEvents[i].getEndTime(),
         {
@@ -41,6 +49,18 @@ function cloneEvents_(date) {
       if (sourceEvents[i].getColor()) {
         event.setColor(sourceEvents[i].getColor());  
       }
+    } else {
+      Logger.log(`${title} skipped`);
     }
   }
+}
+
+// Dash count is purely based on Google office naming conventions
+function isEventWorkingLocation_(eventTitle, isAllDayEvent) {
+  const dashMatch = eventTitle.match(/-/g);
+  const dashCount = dashMatch ? dashMatch.length : 0;
+  const isHome = eventTitle.trim() == "Home";
+  const hasOffice = eventTitle.includes("(Office)");
+  
+  return (isAllDayEvent && (isHome || (dashCount == 2 && hasOffice)));
 }
