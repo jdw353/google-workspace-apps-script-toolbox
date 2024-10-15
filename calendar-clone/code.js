@@ -2,8 +2,8 @@
 // For a primary calendar, this will be something like user@gmail.com.
 // For a secondary calendar, this will be something like xyz@group.calendar.google.com
 
-const SOURCE = 'wex@google.com';
-const DESTINATION = 'oh3jhnto7ol9gj7k0qb63mrg2g@group.calendar.google.com';
+const SOURCE = 'YOUR_EMAIL_ADDRESS_GOES_HERE';
+const DESTINATION = 'SECONDARY_CALENDAR_ID@group.calendar.google.com';
 const NUM_DAYS = 14;
 
 function main() { 
