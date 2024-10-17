@@ -11,17 +11,16 @@ const BLOCK_LIST = [
 ];
 
 function main() {
-  const date = new Date();
-  for (let i = 0; i < NUM_DAYS; i++) {
-    Logger.log(date.toDateString());
-    const events = getEventsToDecline_({ date: date });
-    if (events.length > 0) deleteEvents_({ events });
-    date.setDate(date.getDate() + 1);
-  }
+  const startDate = new Date();
+  const endDate = new Date(startDate.getTime() + (NUM_DAYS * 86400 * 1000));
+  Logger.log(`Start: ${startDate.toDateString()} | End: ${endDate.toDateString()}`);
+
+  const events = getEventsToDecline_({ startDate: startDate, endDate: endDate });
+  if (events.length > 0) deleteEvents_({ events });
 }
 
-function getEventsToDecline_({ date }) {
-  const sourceEvents = CalendarApp.getCalendarById(SOURCE).getEventsForDay(date);
+function getEventsToDecline_({ startDate, endDate }) {
+  const sourceEvents = CalendarApp.getCalendarById(SOURCE).getEvents(startDate, endDate);
   const rejectEvents = sourceEvents.filter((event) => isRejected_({ event: event }));
   Logger.log(`Events to delete: ${rejectEvents.length}`)
   rejectEvents.forEach((event) => logEvent_({ event: event }));
@@ -33,6 +32,7 @@ function isRejected_({ event } = {}) {
   const title = event.getTitle();
   const startTime = event.getStartTime();
   const rejection = determineRejection_({ status: status, title: title, startTime: startTime });
+  Logger.log(`${startTime.toDateString()} | ${title} | ${status} | ${rejection}`);
   return rejection;
 }
 
