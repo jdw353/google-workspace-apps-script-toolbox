@@ -6,61 +6,67 @@ const SOURCE = 'YOUR_EMAIL_ADDRESS_GOES_HERE';
 const DESTINATION = 'SECONDARY_CALENDAR_ID@group.calendar.google.com';
 const NUM_DAYS = 14;
 
-function main() { 
-  const day = new Date();
-  for (let i = 0; i < NUM_DAYS; i++) {
-    clearDestinationEvents_(day);
-    cloneEvents_(day);
-    day.setDate(day.getDate() + 1);
-  }
+function main() {
+  const startDate = new Date();
+  const endDate = new Date(startDate.getTime() + (NUM_DAYS * 86400 * 1000));
+  Logger.log(`Start: ${startDate.toDateString()} | End: ${endDate.toDateString()}`);
+
+  clearDestinationEvents_({ startDate: startDate, endDate: endDate });
+  cloneEvents_({ startDate: startDate, endDate: endDate });
 }
 
-function clearDestinationEvents_(date) {
-  const destinationEvents = CalendarApp.getCalendarById(DESTINATION).getEventsForDay(date);
-  
-  Logger.log(`Clearing events for ${date}`)
-  destinationEvents.forEach(function(event) {
+function clearDestinationEvents_({ startDate, endDate } = {}) {
+  const destinationEvents = CalendarApp.getCalendarById(DESTINATION).getEvents(startDate, endDate);
+
+  (destinationEvents.length > 0) ? Logger.log(`Deleting events...`) : Logger.log(`No events to delete...`);
+
+  destinationEvents.forEach(function (event) {
+    Logger.log(`${event.getStartTime().toDateString()} | ${event.getTitle()}`);
     event.deleteEvent();
   });
 }
 
-function cloneEvents_(date) {
-  const sourceEvents = CalendarApp.getCalendarById(SOURCE).getEventsForDay(date);
+function cloneEvents_({ startDate, endDate } = {}) {
+  const sourceEvents = CalendarApp.getCalendarById(SOURCE).getEvents(startDate, endDate);
   const destination = CalendarApp.getCalendarById(DESTINATION);
 
-  for (let i = 0; i < sourceEvents.length; i++) {
-    Logger.log(`Cloning events for ${date}`)
+  (sourceEvents.length > 0) ? Logger.log(`Cloning events...`) : Logger.log(`No events to clone...`);
 
-    const status = sourceEvents[i].getMyStatus();
-    const title = sourceEvents[i].getTitle();
-    const isAllDayEvent = sourceEvents[i].isAllDayEvent();
+  sourceEvents.forEach((sourceEvent) => {
+    const status = sourceEvent.getMyStatus();
+    const title = sourceEvent.getTitle();
+    const startTime = sourceEvent.getStartTime();
+    const isAllDayEvent = sourceEvent.isAllDayEvent();
 
-    if ((!status || status !== status.NO) && !isEventWorkingLocation_(title, isAllDayEvent)) {
-      Logger.log(`${title} cloned`);
-      let event = destination.createEvent(
+    const isAccepted = !status || status !== status.NO;
+    const isNotWorkingLocation = !isEventWorkingLocation_({ title: title, isAllDayEvent: isAllDayEvent });
+
+    if (isAccepted && isNotWorkingLocation) {
+      Logger.log(`CLONED: ${startTime.toDateString()} | ${title}`);
+      let newEvent = destination.createEvent(
         title,
-        sourceEvents[i].getStartTime(),
-        sourceEvents[i].getEndTime(),
+        startTime,
+        sourceEvent.getEndTime(),
         {
-          description: sourceEvents[i].getDescription(),
-          location: sourceEvents[i].getLocation()
+          description: sourceEvent.getDescription(),
+          location: sourceEvent.getLocation()
         }
-      )
-      if (sourceEvents[i].getColor()) {
-        event.setColor(sourceEvents[i].getColor());  
+      );
+      if (sourceEvent.getColor()) {
+        newEvent.setColor(sourceEvent.getColor());
       }
     } else {
-      Logger.log(`${title} skipped`);
+      Logger.log(`SKIPPED: ${startTime.toDateString()} | ${title}`);
     }
-  }
+  });
 }
 
 // Dash count is purely based on Google office naming conventions
-function isEventWorkingLocation_(eventTitle, isAllDayEvent) {
-  const dashMatch = eventTitle.match(/-/g);
+function isEventWorkingLocation_({ title, isAllDayEvent } = {}) {
+  const dashMatch = title.match(/-/g);
   const dashCount = dashMatch ? dashMatch.length : 0;
-  const isHome = eventTitle.trim() == "Home";
-  const hasOffice = eventTitle.includes("(Office)");
-  
+  const isHome = title.trim() == "Home";
+  const hasOffice = title.includes("(Office)");
+
   return (isAllDayEvent && (isHome || (dashCount == 2 && hasOffice)));
 }
