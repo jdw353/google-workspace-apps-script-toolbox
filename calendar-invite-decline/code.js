@@ -1,5 +1,5 @@
 const SOURCE = 'YOUR_EMAIL_ADDRESS';
-const STATUS = `INVITED`;
+const STATUS = CalendarApp.GuestStatus.INVITED;
 const NUM_DAYS = 21;
 const DECLINE_HOURS = {
   AFTER: 20,
