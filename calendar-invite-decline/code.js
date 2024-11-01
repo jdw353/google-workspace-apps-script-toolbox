@@ -1,4 +1,5 @@
 const SOURCE = 'YOUR_EMAIL_ADDRESS';
+const LOG_ID = `YOUR_GOOGLE_DOC_ID`;
 const STATUS = CalendarApp.GuestStatus.INVITED;
 const NUM_DAYS = 21;
 const DECLINE_HOURS = {
@@ -49,11 +50,29 @@ function determineRejection_({ status, title, startTime, creator } = {}) {
 }
 
 function deleteEvents_({ events } = {}) {
+  const body = getLogBody_();
+
   Logger.log(`Deleting events...`)
   events.forEach((event) => {
-    Logger.log(`${event.getTitle()} deleted`);
+    const logString = `DELETED: ${event.getStartTime().toDateString()} | ${event.getTitle()} | ${event.getCreators()[0]}`;
+    Logger.log(logString);
+    if (body) body.insertParagraph(0, logString);
     event.deleteEvent();
   });
+
+  if (body) {
+    const now = new Date();
+    body.insertParagraph(0, now.toString());
+  }
+}
+
+function getLogBody_({ } = {}) {
+  try {
+    return DocumentApp.openById(LOG_ID).getBody();
+  } catch (e) {
+    Logger.log(e);
+    return null;
+  }
 }
 
 function logEvent_({ event } = {}) {
