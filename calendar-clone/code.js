@@ -4,7 +4,11 @@
 
 const SOURCE = 'YOUR_EMAIL_ADDRESS_GOES_HERE';
 const DESTINATION = 'SECONDARY_CALENDAR_ID@group.calendar.google.com';
-const NUM_DAYS = 14;
+const NUM_DAYS = 28;
+const ERRORS = [
+  "Service timed out: Calendar",
+  "We're sorry, a server error occurred. Please wait a bit and try again.",
+];
 
 function main() {
   const startDate = new Date();
@@ -27,6 +31,7 @@ function clearDestinationEvents_({ startDate, endDate } = {}) {
 }
 
 function cloneEvents_({ startDate, endDate } = {}) {
+  // TODO: Wrap this in a try/catch as well.
   const sourceEvents = CalendarApp.getCalendarById(SOURCE).getEvents(startDate, endDate);
   const destination = CalendarApp.getCalendarById(DESTINATION);
 
@@ -37,36 +42,51 @@ function cloneEvents_({ startDate, endDate } = {}) {
     const title = sourceEvent.getTitle();
     const startTime = sourceEvent.getStartTime();
     const isAllDayEvent = sourceEvent.isAllDayEvent();
+    const eventType = sourceEvent.getEventType();
 
     const isAccepted = !status || status !== status.NO;
-    const isNotWorkingLocation = !isEventWorkingLocation_({ title: title, isAllDayEvent: isAllDayEvent });
-
-    if (isAccepted && isNotWorkingLocation) {
-      Logger.log(`CLONED: ${startTime.toDateString()} | ${title}`);
-      let newEvent = destination.createEvent(
-        title,
-        startTime,
-        sourceEvent.getEndTime(),
-        {
-          description: sourceEvent.getDescription(),
-          location: sourceEvent.getLocation()
+    const isNotWorkingLocation = !isEventWorkingLocation_({ title: title, isAllDayEvent: isAllDayEvent, eventType: eventType });
+    try {
+      if (isAccepted && isNotWorkingLocation) {
+        const newEvent = destination.createEvent(
+          title,
+          startTime,
+          sourceEvent.getEndTime(),
+          {
+            description: sourceEvent.getDescription(),
+            location: sourceEvent.getLocation()
+          }
+        );
+        if (sourceEvent.getColor()) {
+          newEvent.setColor(sourceEvent.getColor());
         }
-      );
-      if (sourceEvent.getColor()) {
-        newEvent.setColor(sourceEvent.getColor());
+        Logger.log(`CLONED: ${startTime.toDateString()} | ${title} | ${eventType}`);
+      } else {
+        Logger.log(`SKIPPED: ${startTime.toDateString()} | ${title} | ${eventType}`);
       }
-    } else {
-      Logger.log(`SKIPPED: ${startTime.toDateString()} | ${title}`);
+    } catch (e) {
+      Logger.log(`Error caught: ${e.name} | ${e.message}`);
+      // Known errors can be skipped. A delay may be enough to allow the rest to complete.
+      // If there's an unknown (to the script) error, we want it to be thrown so we can see it.
+      if (ERRORS.includes(e.message)) {
+        Logger.log(`Failed event: ${title}`);
+        Utilities.sleep(10000); // 10 seconds
+      } else {
+        throw e;
+      }
     }
+
   });
 }
 
 // Dash count is purely based on Google office naming conventions
-function isEventWorkingLocation_({ title, isAllDayEvent } = {}) {
+// TODO: This can likely be fully removed in exchange for the eventType check.
+function isEventWorkingLocation_({ title, isAllDayEvent, eventType } = {}) {
   const dashMatch = title.match(/-/g);
   const dashCount = dashMatch ? dashMatch.length : 0;
   const isHome = title.trim() == "Home";
   const hasOffice = title.includes("(Office)");
+  const isWorkingLocation = eventType == "WORKING_LOCATION";
 
-  return (isAllDayEvent && (isHome || (dashCount == 2 && hasOffice)));
+  return isWorkingLocation || (isAllDayEvent && (isHome || (dashCount == 2 && hasOffice)));
 }
