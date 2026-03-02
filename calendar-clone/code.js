@@ -43,6 +43,8 @@ function cloneEvents_({ startDate, endDate } = {}) {
     const startTime = sourceEvent.getStartTime();
     const isAllDayEvent = sourceEvent.isAllDayEvent();
     const eventType = sourceEvent.getEventType();
+    // Transparency is Calendar's free/busy indicator.
+    const transparency = sourceEvent.getTransparency();
 
     const isAccepted = !status || status !== status.NO;
     const isNotWorkingLocation = !isEventWorkingLocation_({ title: title, isAllDayEvent: isAllDayEvent, eventType: eventType });
@@ -57,6 +59,7 @@ function cloneEvents_({ startDate, endDate } = {}) {
             location: sourceEvent.getLocation()
           }
         );
+        newEvent.setTransparency(transparency);
         if (sourceEvent.getColor()) {
           newEvent.setColor(sourceEvent.getColor());
         }
